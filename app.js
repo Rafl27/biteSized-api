@@ -11,8 +11,9 @@ mongoose.connect('mongodb+srv://rafael:sTiEMncLcvyLJtbs@bitesizeddb.mjc4hsn.mong
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
 
-const User = require('./models/user');
-const Story = require('./models/story');
+const User = require('./src/models/user');
+const Story = require('./src/models/story');
+const requireAuth = require('./src/middlewares/authMiddleware');
 
 const JWT_SECRET = 'mysecretkey';
 
@@ -70,20 +71,6 @@ app.delete('/stories/:id', async (req, res) => {
     res.json(story);
 });
 
-// Middleware to authenticate user
-const requireAuth = (req, res, next) => {
-    const token = req.headers.authorization;
-    if (!token) {
-        return res.status(401).json({ error: 'You must be logged in' });
-    }
-    try {
-        const payload = jwt.verify(token, JWT_SECRET);
-        req.userId = payload.userId;
-        next();
-    } catch (err) {
-        res.status(401).json({ error: 'You must be logged in' });
-    }
-};
 app.listen(3000, () => {
     console.log('Server listening on port 3000');
 });
