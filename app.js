@@ -3,42 +3,44 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const userRoutes = require('./src/routes/userRoutes');
 
 const app = express();
 app.use(bodyParser.json());
+app.use('/user', userRoutes);
 
 mongoose.connect('mongodb+srv://rafael:sTiEMncLcvyLJtbs@bitesizeddb.mjc4hsn.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
 
-const User = require('./src/models/user');
+// const User = require('./src/models/user');
 const Story = require('./src/models/story');
 const requireAuth = require('./src/middlewares/authMiddleware');
 
 const JWT_SECRET = 'mysecretkey';
 
-app.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
-    const hash = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hash });
-    await user.save();
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-    res.json({ token });
-});
+// app.post('/signup', async (req, res) => {
+//     const { name, email, password } = req.body;
+//     const hash = await bcrypt.hash(password, 10);
+//     const user = new User({ name, email, password: hash });
+//     await user.save();
+//     const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+//     res.json({ token });
+// });
 
-app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
-        return res.status(422).json({ error: 'Invalid email or password' });
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-        return res.status(422).json({ error: 'Invalid email or password' });
-    }
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-    res.json({ token });
-});
+// app.post('/login', async (req, res) => {
+//     const { email, password } = req.body;
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//         return res.status(422).json({ error: 'Invalid email or password' });
+//     }
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//         return res.status(422).json({ error: 'Invalid email or password' });
+//     }
+//     const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+//     res.json({ token });
+// });
 
 app.get('/stories', async (req, res) => {
     const stories = await Story.find().populate('user', '-password');
