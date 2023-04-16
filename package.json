@@ -18,5 +18,9 @@
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.2.0",
     "mongoose": "^7.0.3"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }
