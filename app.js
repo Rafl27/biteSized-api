@@ -47,7 +47,9 @@ app.get('/stories', async (req, res) => {
 
 app.post('/stories', async (req, res) => {
     const { name, text } = req.body;
-    const story = new Story({ name, text, user: req.userId });
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, 'mysecretkey');
+    const story = new Story({ name, text, user: decoded.userId });
     await story.save();
     res.json(story);
 });
