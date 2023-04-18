@@ -34,16 +34,6 @@ exports.deleteStories = async (req, res) => {
     res.json(story);
 }
 
-// exports.postComment = async (req, res) => {
-//     const { id } = req.params;
-//     const { text } = req.body;
-//     const token = req.headers.authorization.split(' ')[1];
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     const comment = { user: decoded.userId, text };
-//     const story = await Story.findByIdAndUpdate(id, { $push: { comments: comment } }, { new: true }).populate('comments.user', '-password');
-//     res.json(story);
-// }
-
 // http://localhost:3000/story/643df1a88783d6a4d2dc55af/comments
 exports.postComment = async (req, res) => {
     try {
@@ -67,16 +57,7 @@ exports.postComment = async (req, res) => {
     }
 };
 
-// http://localhost:3000/stories/<story-id>/comments/<comment-id>/replies
-// exports.postReply = async (req, res) => {
-//     const { id, commentId } = req.params;
-//     const { text } = req.body;
-//     const token = req.headers.authorization.split(' ')[1];
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     const reply = { user: decoded.userId, text };
-//     const story = await Story.findOneAndUpdate({ _id: id, 'comments._id': commentId }, { $push: { 'comments.$.replies': reply } }, { new: true }).populate('comments.user', '-password').populate('comments.replies.user', '-password');
-//     res.json(story);
-// }
+// http://localhost:3000/story/643df1a88783d6a4d2dc55af/comments/643df1da8783d6a4d2dc55b2/replies
 exports.postReply = async (req, res, next) => {
     try {
         const { id, commentId } = req.params;
