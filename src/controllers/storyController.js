@@ -2,37 +2,72 @@ const jwt = require('jsonwebtoken');
 const Story = require('../models/story');
 
 exports.getStories = async (req, res) => {
-    const stories = await Story.findById(id).populate('user', '-password').populate('comments.user', '-password');
-    res.json(stories);
-}
+    try {
+        const stories = await Story.findById(id)
+            .populate('user', '-password')
+            .populate('comments.user', '-password');
+        res.json(stories);
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong!' });
+    }
+};
 
 exports.postStories = async (req, res) => {
-    const { name, text, img } = req.body;
-    const token = req.headers.authorization.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const story = new Story({ name, text, img, user: decoded.userId });
-    await story.save();
-    res.json(story);
-}
+    try {
+        const { name, text, img } = req.body;
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const story = new Story({ name, text, img, user: decoded.userId });
+        await story.save();
+        res.json(story);
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong!' });
+    }
+};
 
 exports.getStoriesId = async (req, res) => {
-    const { id } = req.params;
-    const story = await Story.findById(id).populate('user', '-password');
-    res.json(story);
-}
+    try {
+        const { id } = req.params;
+        const story = await Story.findById(id).populate('user', '-password');
+        if (!story) {
+            return res.status(404).json({ message: 'Story not found' });
+        }
+        res.json(story);
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong!' });
+    }
+};
 
 exports.putStoriesId = async (req, res) => {
-    const { id } = req.params;
-    const { name, text, img } = req.body;
-    const story = await Story.findByIdAndUpdate(id, { name, text, img }, { new: true }).populate('user', '-password');
-    res.json(story);
-}
+    try {
+        const { id } = req.params;
+        const { name, text, img } = req.body;
+        const story = await Story.findByIdAndUpdate(
+            id,
+            { name, text, img },
+            { new: true }
+        ).populate('user', '-password');
+        if (!story) {
+            return res.status(404).json({ message: 'Story not found' });
+        }
+        res.json(story);
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong!' });
+    }
+};
 
 exports.deleteStories = async (req, res) => {
-    const { id } = req.params;
-    const story = await Story.findByIdAndDelete(id);
-    res.json(story);
-}
+    try {
+        const { id } = req.params;
+        const story = await Story.findByIdAndDelete(id);
+        if (!story) {
+            return res.status(404).json({ message: 'Story not found' });
+        }
+        res.json(story);
+    } catch (error) {
+        res.status(500).json({ message: 'Something went wrong!' });
+    }
+};
 
 // http://localhost:3000/story/643df1a88783d6a4d2dc55af/comments
 exports.postComment = async (req, res) => {
