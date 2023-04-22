@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const userRoutes = require('./src/routes/userRoutes');
 const storyRoutes = require('./src/routes/storyRoutes');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 app.use('/user', userRoutes);
 app.use('/story', storyRoutes);

@@ -3,7 +3,7 @@ const Story = require('../models/story');
 
 exports.getStories = async (req, res) => {
     try {
-        const stories = await Story.findById(id)
+        const stories = await Story.find({})
             .populate('user', '-password')
             .populate('comments.user', '-password');
         res.json(stories);
@@ -11,6 +11,8 @@ exports.getStories = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong!' });
     }
 };
+
+//TODO add upvotes
 
 exports.postStories = async (req, res) => {
     try {

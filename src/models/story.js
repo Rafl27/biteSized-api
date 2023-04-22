@@ -11,6 +11,7 @@ const storySchema = new mongoose.Schema({
     text: { type: String, required: true },
     img: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    date: { type: Date, default: Date.now },
     comments: [commentSchema],
 });
 
