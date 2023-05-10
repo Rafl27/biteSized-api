@@ -59,7 +59,9 @@ exports.login = async (req, res) => {
 
 exports.getUserInfo = async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.params.userId });
+        const token = req.headers.authorization.split(' ')[1]; // Get the token from the header
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET); // Verify the token
+        const user = await User.findOne({ _id: decodedToken.userId }); // Use the decoded token to find the user by ID
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
