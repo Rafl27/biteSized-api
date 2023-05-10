@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const requireAuth = require('../middlewares/authMiddleware');
 require('dotenv').config();
 
 exports.signup = async (req, res) => {
@@ -50,8 +51,21 @@ exports.login = async (req, res) => {
             return res.status(422).json({ error: 'Invalid email or password' });
         }
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-        res.json({ name: user.name, token });
+        res.json({ token: token });
     } catch (err) {
         res.status(500).json({ message: 'Something went wrong when trying to login' });
     }
 }
+
+exports.getUserInfo = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.params.userId });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ "name": user.name, "email": user.email });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong on the server-side" });
+    }
+};
