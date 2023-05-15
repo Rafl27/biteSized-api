@@ -124,3 +124,35 @@ exports.postReply = async (req, res, next) => {
 // The postComment controller adds a new comment to the comments array of the story. The comment is created using the decoded.userId to set the user field, and the text field is taken from the request body.
 
 // The postReply controller adds a new reply to a comment. It first finds the story and the comment using their IDs, and then adds the new reply to the replies array of the comment. The user field of the reply is set using decoded.userId, and the text field is taken from the request body. Note that the findOneAndUpdate method is used to update the story and the comment at the same time.
+
+exports.upvoteStory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const story = await Story.findById(id);
+        if (!story) {
+            return res.status(404).json({ message: 'Story not found' });
+        }
+        story.upvotes += 1;
+        await story.save();
+        res.json(story);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+exports.downvoteStory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const story = await Story.findById(id);
+        if (!story) {
+            return res.status(404).json({ message: 'Story not found' });
+        }
+        story.downvotes += 1;
+        await story.save();
+        res.json(story);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

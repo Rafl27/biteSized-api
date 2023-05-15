@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./src/routes/userRoutes');
 const storyRoutes = require('./src/routes/storyRoutes');
 const cors = require('cors');
+const Story = require('./src/models/story');
+const requireAuth = require('./src/middlewares/authMiddleware');
 
 const app = express();
 app.use(cors());
@@ -15,8 +17,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
 
-const Story = require('./src/models/story');
-const requireAuth = require('./src/middlewares/authMiddleware');
+
 
 app.listen(3000, () => {
     console.log('Server listening on port 3000');
