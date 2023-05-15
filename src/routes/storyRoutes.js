@@ -9,5 +9,7 @@ router.put('/:id', storyController.putStoriesId);
 router.delete('/:id', storyController.deleteStories);
 router.post('/:id/comments', storyController.postComment);
 router.post('/:id/comments/:commentId/replies', storyController.postReply);
+router.put('/:id/upvote', storyController.upvoteStory);
+router.put('/:id/downvote', storyController.downvoteStory);
 
 module.exports = router;
