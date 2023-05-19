@@ -8,7 +8,7 @@ exports.getStories = async (req, res) => {
             .populate('comments.user', '-password');
         res.json(stories);
     } catch (error) {
-        res.status(500).json({ message: 'Something went wrong!' });
+        res.status(500).json({ message: 'Something went wrong! getStories' });
     }
 };
 
@@ -23,7 +23,7 @@ exports.postStories = async (req, res) => {
         await story.save();
         res.json(story);
     } catch (error) {
-        res.status(500).json({ message: 'Something went wrong!' });
+        res.status(500).json({ message: 'Something went wrong! postStories' });
     }
 };
 
@@ -36,7 +36,7 @@ exports.getStoriesId = async (req, res) => {
         }
         res.json(story);
     } catch (error) {
-        res.status(500).json({ message: 'Something went wrong!' });
+        res.status(500).json({ message: 'Something went wrong! getStoriesId' });
     }
 };
 
@@ -54,7 +54,7 @@ exports.putStoriesId = async (req, res) => {
         }
         res.json(story);
     } catch (error) {
-        res.status(500).json({ message: 'Something went wrong!' });
+        res.status(500).json({ message: 'Something went wrong! putStoriesId' });
     }
 };
 
@@ -68,6 +68,28 @@ exports.deleteStories = async (req, res) => {
         res.json(story);
     } catch (error) {
         res.status(500).json({ message: 'Something went wrong!' });
+    }
+};
+
+exports.usercollection = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        console.log(token);
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized: Missing token' });
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (!decoded || !decoded.userId) {
+            return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+        }
+        const userId = decoded.userId;
+        const stories = await Story.find({ user: userId })
+            .populate('user', '-password')
+            .populate('comments.user', '-password');
+        res.json(stories);
+    } catch (error) {
+        console.error('Error in getStoriesByUser:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
@@ -156,3 +178,7 @@ exports.downvoteStory = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
+
+
+
