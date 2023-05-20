@@ -4,7 +4,10 @@ const Story = require('../models/story');
 exports.getStories = async (req, res) => {
     try {
         const stories = await Story.find({})
-            .populate('user', '-password')
+            .populate({
+                path: 'user',
+                select: 'name profilePicture'
+            })
             .populate('comments.user', '-password');
         res.json(stories);
     } catch (error) {
