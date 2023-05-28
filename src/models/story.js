@@ -11,7 +11,7 @@ const storySchema = new mongoose.Schema({
     name: { type: String, required: true },
     text: { type: String, required: true },
     img: { type: String },
-    user: { type: String, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     date: { type: Date, default: Date.now },
     comments: [commentSchema],
     upvotes: { type: Number, default: 0 },
