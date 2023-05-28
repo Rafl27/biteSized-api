@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const Story = require('../models/story');
+const User = require('../models/user')
 
 exports.getStories = async (req, res) => {
     try {
@@ -101,17 +102,33 @@ exports.postComment = async (req, res) => {
     try {
         const { id } = req.params;
         const { text } = req.body;
+
         if (!req.headers.authorization) {
             return res.status(401).json({ message: 'Authorization header missing' });
         }
+
         const token = req.headers.authorization.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
         const story = await Story.findById(id);
         if (!story) {
             return res.status(404).json({ message: 'Story not found' });
         }
-        const comment = { user: decoded.userId, text };
-        const updatedStory = await Story.findByIdAndUpdate(id, { $push: { comments: comment } }, { new: true }).populate('comments.user', '-password');
+
+        const user = await User.findById(decoded.userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const comment = { user: user.name, text }; // Replace user ID with the user's name
+
+        const updatedStory = await Story.findByIdAndUpdate(
+            id,
+            { $push: { comments: comment } },
+            { new: true }
+        ).populate('comments.user', '-password');
+
         res.json(updatedStory);
     } catch (error) {
         console.error(error);
