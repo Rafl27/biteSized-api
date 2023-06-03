@@ -12,4 +12,5 @@ router.put('/:id/upvote', storyController.upvoteStory);
 router.put('/:id/downvote', storyController.downvoteStory);
 router.get('/usercollection', storyController.usercollection);
 router.get('/:id', storyController.getStoriesId);
+router.post('/:id/comments/:commentId/replies/:replyId/response', storyController.postNestedReply);
 module.exports = router;

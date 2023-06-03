@@ -1,11 +1,21 @@
 const mongoose = require('mongoose');
 
-const commentSchema = new mongoose.Schema({
-    user: { type: String, required: true },
-    text: { type: String, required: true },
-    replies: [this],
+const nestedReplySchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    text: { type: String, required: true }
 });
 
+const replySchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    text: { type: String, required: true },
+    nestedReplies: [nestedReplySchema]
+});
+
+const commentSchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    text: { type: String, required: true },
+    replies: [replySchema],
+});
 
 const storySchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -17,6 +27,5 @@ const storySchema = new mongoose.Schema({
     upvotes: { type: Number, default: 0 },
     downvotes: { type: Number, default: 0 },
 });
-
 
 module.exports = mongoose.model('Story', storySchema);

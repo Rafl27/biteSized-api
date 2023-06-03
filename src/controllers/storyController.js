@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Story = require('../models/story');
 const User = require('../models/user')
+const mongoose = require('mongoose');
 
 exports.getStories = async (req, res) => {
     try {
@@ -158,6 +159,32 @@ exports.postReply = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.postNestedReply = async (req, res) => {
+    try {
+        const { id, commentId, replyId } = req.params;
+        const { text } = req.body;
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Authorization header not found' });
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const nestedReply = { user: decoded.userId, text };
+        const story = await Story.findOneAndUpdate(
+            { _id: id, 'comments._id': commentId, 'comments.replies._id': replyId },
+            { $push: { 'comments.$.replies.$[reply].nestedReplies': nestedReply } },
+            { new: true, arrayFilters: [{ 'reply._id': replyId }] }
+        ).populate('comments.user', '-password').populate('comments.replies.user', '-password').populate('comments.replies.nestedReplies.user', '-password');
+        if (!story) {
+            return res.status(404).json({ message: 'Story, comment, or reply not found' });
+        }
+        res.json(story);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 
 exports.upvoteStory = async (req, res) => {
     try {
