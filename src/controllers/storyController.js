@@ -16,8 +16,6 @@ exports.getStories = async (req, res) => {
     }
 };
 
-//TODO add upvotes
-
 exports.postStories = async (req, res) => {
     try {
         const { name, text, img } = req.body;
@@ -161,12 +159,6 @@ exports.postReply = async (req, res, next) => {
     }
 }
 
-// The getStory controller now also populates the comments.user field to get the details of the user who posted the comment.
-
-// The postComment controller adds a new comment to the comments array of the story. The comment is created using the decoded.userId to set the user field, and the text field is taken from the request body.
-
-// The postReply controller adds a new reply to a comment. It first finds the story and the comment using their IDs, and then adds the new reply to the replies array of the comment. The user field of the reply is set using decoded.userId, and the text field is taken from the request body. Note that the findOneAndUpdate method is used to update the story and the comment at the same time.
-
 exports.upvoteStory = async (req, res) => {
     try {
         const { id } = req.params;
@@ -198,7 +190,3 @@ exports.downvoteStory = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-
-
-
-
