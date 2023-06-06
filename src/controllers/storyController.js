@@ -120,7 +120,7 @@ exports.postComment = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const comment = { user: user.name, text }; // Replace user ID with the user's name
+        const comment = { user: user._id, text }; 
 
         const updatedStory = await Story.findByIdAndUpdate(
             id,
@@ -134,6 +134,7 @@ exports.postComment = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 
 // http://localhost:3000/story/643df1a88783d6a4d2dc55af/comments/643df1da8783d6a4d2dc55b2/replies
 exports.postReply = async (req, res, next) => {
