@@ -107,14 +107,12 @@ exports.postComment = async (req, res) => {
 
         const token = req.headers.authorization.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("decoded" + decoded)
         const story = await Story.findById(id);
         if (!story) {
             return res.status(404).json({ message: 'Story not found' });
         }
 
         const user = await User.findById(decoded.userId);
-        console.log("user" + user)
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -135,6 +133,7 @@ exports.postComment = async (req, res) => {
     }
 };
 
+// TODO: Return the user                
 exports.postReply = async (req, res, next) => {
     try {
         const { id, commentId } = req.params;
@@ -144,12 +143,15 @@ exports.postReply = async (req, res, next) => {
             return res.status(401).json({ message: 'Authorization header not found' });
         }
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const reply = { user: decoded.userId, text };
+        const user = await User.findById(decoded.userId);
+        const reply = { user: user, text };
         const story = await Story.findOneAndUpdate(
             { _id: id, 'comments._id': commentId },
             { $push: { 'comments.$.replies': reply } },
             { new: true }
-        ).populate('comments.user', '-password').populate('comments.replies.user', '-password');
+        )
+        .populate('comments.user', '-password')
+        .populate('comments.replies.user', '-password');
         if (!story) {
             return res.status(404).json({ message: 'Story or comment not found' });
         }
