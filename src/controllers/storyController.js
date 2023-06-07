@@ -33,7 +33,7 @@ exports.postStories = async (req, res) => {
 exports.getStoriesId = async (req, res) => {
     try {
         const { id } = req.params;
-        const story = await Story.findById(id).populate({path: 'user', select: 'name profilePicture'}).populate('comments.user', '-password');
+        const story = await Story.findById(id).populate({path: 'user', select: 'name profilePicture'}).populate('comments.user', '-password').populate('comments.replies.user', '-password');
         if (!story) {
             return res.status(404).json({ message: 'Story not found' });
         }
@@ -144,13 +144,17 @@ exports.postReply = async (req, res, next) => {
         }
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findById(decoded.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
         const reply = { user: user, text };
+        console.log(user)
         const story = await Story.findOneAndUpdate(
             { _id: id, 'comments._id': commentId },
             { $push: { 'comments.$.replies': reply } },
             { new: true }
         )
-        .populate('comments.user', '-password')
+        // .populate('comments.user', '-password')
         .populate('comments.replies.user', '-password');
         if (!story) {
             return res.status(404).json({ message: 'Story or comment not found' });
