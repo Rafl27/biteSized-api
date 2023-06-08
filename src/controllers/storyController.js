@@ -33,7 +33,10 @@ exports.postStories = async (req, res) => {
 exports.getStoriesId = async (req, res) => {
     try {
         const { id } = req.params;
-        const story = await Story.findById(id).populate({path: 'user', select: 'name profilePicture'}).populate('comments.user', '-password').populate('comments.replies.user', '-password');
+        const story = await Story.findById(id).populate({path: 'user', select: 'name profilePicture'})
+        .populate('comments.user', '-password')
+        .populate('comments.replies.user', '-password')
+        .populate('comments.replies.nestedReplies.user', '-password');
         if (!story) {
             return res.status(404).json({ message: 'Story not found' });
         }
