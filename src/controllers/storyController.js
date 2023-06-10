@@ -33,10 +33,10 @@ exports.postStories = async (req, res) => {
 exports.getStoriesId = async (req, res) => {
     try {
         const { id } = req.params;
-        const story = await Story.findById(id).populate({path: 'user', select: 'name profilePicture'})
-        .populate('comments.user', '-password')
-        .populate('comments.replies.user', '-password')
-        .populate('comments.replies.nestedReplies.user', '-password');
+        const story = await Story.findById(id).populate({ path: 'user', select: 'name profilePicture' })
+            .populate('comments.user', '-password')
+            .populate('comments.replies.user', '-password')
+            .populate('comments.replies.nestedReplies.user', '-password');
         if (!story) {
             return res.status(404).json({ message: 'Story not found' });
         }
@@ -102,7 +102,7 @@ exports.usercollection = async (req, res) => {
 exports.postComment = async (req, res) => {
     try {
         const { id } = req.params;
-        const { text } = req.body;
+        const { text, img } = req.body;
 
         if (!req.headers.authorization) {
             return res.status(401).json({ message: 'Authorization header missing' });
@@ -120,14 +120,14 @@ exports.postComment = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const comment = { user: user, text }; 
+        const comment = { user: user, text, img };
 
         const updatedStory = await Story.findByIdAndUpdate(
             id,
             { $push: { comments: comment } },
             { new: true }
         )
-        .populate('comments.user', '-password');
+            .populate('comments.user', '-password');
 
         res.json(updatedStory);
     } catch (error) {
@@ -136,7 +136,6 @@ exports.postComment = async (req, res) => {
     }
 };
 
-// TODO: Return the user                
 exports.postReply = async (req, res, next) => {
     try {
         const { id, commentId } = req.params;
@@ -157,8 +156,8 @@ exports.postReply = async (req, res, next) => {
             { $push: { 'comments.$.replies': reply } },
             { new: true }
         )
-        // .populate('comments.user', '-password')
-        .populate('comments.replies.user', '-password');
+            // .populate('comments.user', '-password')
+            .populate('comments.replies.user', '-password');
         if (!story) {
             return res.status(404).json({ message: 'Story or comment not found' });
         }
