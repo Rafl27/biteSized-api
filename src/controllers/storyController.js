@@ -170,13 +170,13 @@ exports.postReply = async (req, res, next) => {
 exports.postNestedReply = async (req, res) => {
     try {
         const { id, commentId, replyId } = req.params;
-        const { text } = req.body;
+        const { text, img } = req.body;
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) {
             return res.status(401).json({ message: 'Authorization header not found' });
         }
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const nestedReply = { user: decoded.userId, text };
+        const nestedReply = { user: decoded.userId, text, img };
         const story = await Story.findOneAndUpdate(
             { _id: id, 'comments._id': commentId, 'comments.replies._id': replyId },
             { $push: { 'comments.$.replies.$[reply].nestedReplies': nestedReply } },
