@@ -139,7 +139,7 @@ exports.postComment = async (req, res) => {
 exports.postReply = async (req, res, next) => {
     try {
         const { id, commentId } = req.params;
-        const { text } = req.body;
+        const { text, img } = req.body;
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) {
             return res.status(401).json({ message: 'Authorization header not found' });
@@ -149,7 +149,7 @@ exports.postReply = async (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        const reply = { user: user, text };
+        const reply = { user: user, text, img };
         console.log(user)
         const story = await Story.findOneAndUpdate(
             { _id: id, 'comments._id': commentId },
